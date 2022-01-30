@@ -30,13 +30,12 @@ Call the policy `projectshare`, and give it the following JSON policy. Replace t
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
-                "ssm:GetParameterHistory",
                 "ssm:ListTagsForResource",
                 "ssm:GetParametersByPath",
                 "ssm:GetParameters",
                 "ssm:GetParameter"
             ],
-            "Resource": "arn:aws:ssm:us-west-2:YOUR-ACCOUNT-ID:parameter/projectshare*/*"
+            "Resource": "arn:aws:ssm:us-west-2:YOUR-ACCOUNT-ID-WITHOUT-DASHES:parameter/projectshare_*"
         }
     ]
 }
