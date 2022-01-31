@@ -74,6 +74,8 @@ CREATE DATABASE IF NOT EXISTS projectshare;
 GRANT ALL PRIVILEGES ON projectshare . * TO  'projectshare'@'localhost';
 flush privileges;
 
+USE projectshare;
+
 CREATE TABLE `users` (
   `id` int(11) AUTO_INCREMENT PRIMARY KEY,
   `username` varchar(255) NOT NULL,
@@ -108,6 +110,7 @@ CREATE TABLE IF NOT EXISTS comments (
 )  ENGINE=INNODB;
 
 EOF
+
 ```
 ## SSH Connect to your EC2
 Once your ec2 is launched, ssh into it to execute any bash commands in the below sections
