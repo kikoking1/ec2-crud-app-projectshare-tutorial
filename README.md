@@ -11,16 +11,11 @@ projectshare_db_root_user_pass
 projectshare_db_user_pass
 ```
 
-## Create IAM Role For EC2 to access resources 
-In order for the ec2 to access the paramater store and inject the values into the bash scripts, it needs to have permission to access that aws resource. 
-
-Create a new IAM Role called `projectshare`, which will later attached to the ec2. (we create the policy in the next step).
-
-## Create IAM policy (for the role) allowing access to Parameter Store Values 
-Create a brand new policy for this above role, having only this policy attached to it, to limit the access of the ec2 to other aws resources.
+## Create IAM policy allowing access to Parameter Store Values 
+Create a brand new policy, to give very specific limited access of the ec2 to other aws resources.
 
 Call the policy `projectshare`, and give it the following JSON policy. Replace the 
-`YOUR-ACCOUNT-ID` with your aws account id. (You can find your account ID by clicking on the "My" AWS Account dropdown in the top right of your aws. Copy without the dashes)
+`YOUR-ACCOUNT-ID` with your aws account id. Also replace `us-west-2` with your resources' region id, if different. (You can find your account ID by clicking on the "My" AWS Account dropdown in the top right of your aws. Copy without the dashes)
 
 ```
 {
@@ -41,12 +36,17 @@ Call the policy `projectshare`, and give it the following JSON policy. Replace t
 }
 ```
 
+## Create IAM Role to Attache the Policy to
+Create a new IAM Role called `projectshare`, which will later attached to the ec2.
+
+Then attach your custom policy from above to this new IAM role.
+
 ## Create EC2
-1. Add “User Data Script” below to the user data section on ec2 creation
-2. Create security group on ec2 with port 80, 443 open to the world, and port 22 to just “My IP”
-3. Attach the IAM role, that was created above, to the ec2
-4. When prompted, create new private key and download for use in connecting via ssh later.
-5. Launch the ec2
+1. Add “User Data Script” below to the user data section on ec2 creation.
+2. Create security group on ec2 with port 80, 443 open to the world, and port 22 to just “My IP”.
+3. Attach the IAM role, that was created above, to the ec2.
+4. When prompted, create new private key and download for use in connecting via ssh later. (if you haven't had one created already).
+5. Launch the ec2.
 
 ```
 #!/bin/bash
@@ -113,7 +113,9 @@ EOF
 
 ```
 ## SSH Connect to your EC2
-Once your ec2 is launched, ssh into it to execute any bash commands in the below sections
+Once your ec2 is launched, ssh into it to execute any bash commands in the below sections.
+
+Before moving on, it might be a good idea to check if your new db user was created with the new password, and that the database tables exist in the new database. If not, go ahead and run the necessary commands to that were missed from executing the above user data script. (You could recreate ec2 and instead of doing using the user data scripts, simply execute the above scripts manually after ssh connecting to more easily troubleshoot).
 
 ## Changing SSH port to non standard port 
 ```
@@ -125,7 +127,7 @@ sudo systemctl restart sshd
 ```
 
 ## Upload the web application
-1. Clone this repo locally
+1. Clone this repo locally.
 2. Create an env.ini file in the root of the project with the following contents (make sure the password is the userdb password from your paramater store):
 ```
 [db]
@@ -134,9 +136,10 @@ username = "projectshare";
 password = "";
 dbname = "projectshare";
 ```
-3. Download and install FileZilla (Or some other ftp transfer client. If you don't have it already) -> [FileZilla Download Link](https://filezilla-project.org/download.php)
-4. Connect to your ec2 with your ftp client, and upload all the files into the `/var/www/` folder (minus the hidden .git folder)
-5. The app should be working over non ssl (http traffic). Visit your `Public IPV4 DNS` name in your browser to check it out. 
+3. Create a new folder in the cloned repo in the `html/assets/` folder called `img_uploads`.
+4. Download and install FileZilla (Or some other ftp transfer client. If you don't have it already) -> [FileZilla Download Link](https://filezilla-project.org/download.php).
+5. Connect to your ec2 with your ftp client, and upload all the files into the `/var/www/` folder (minus the hidden .git folder).
+6. The app should be working over non ssl (http traffic). Visit your `Public IPV4 DNS` name in your browser to check it out. 
 
 ## Adding Elastic IP
 - In the EC2 dashboard area in aws, find `Elastic IPs` in the left side menu.
