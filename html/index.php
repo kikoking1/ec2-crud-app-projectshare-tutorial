@@ -21,7 +21,7 @@
 
 <div class="container">
     
-    <h1>Welcome to Post Share App!</h1>
+    <h1>Welcome to Project Share App!</h1>
 
     <?php // Display error message
     if ( !empty($_SESSION['api_msg_errs']) ) {
